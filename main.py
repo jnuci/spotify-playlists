@@ -105,16 +105,23 @@ def get_playlists():
             if len(batch) == 100:
                 track_ids.append(batch)
                 batch = []
-        if batch:
-            track_ids.append(batch)
+    if batch:
+        track_ids.append(batch)
 
     features = []
+    # count = 0
     for batch in track_ids:
         response = requests.get(
             API_BASE_URL + 'audio-features' + f'?ids={",".join(batch)}', headers=headers)
         playlist = response.json()
 
         for song in playlist['audio_features']:
+            # if not song:
+            #     print("0000000000000000000000000000000000000")
+            #     print(track_names[count])
+            #     count += 1
+            #     continue
+            # count += 1
             temp = {feature: value for feature, value in song.items() if feature in [
                 "danceability", "energy", "instrumentalness", "loudness", "speechiness", "tempo", "valence"]}
             features.append(temp)
