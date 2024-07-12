@@ -2,16 +2,23 @@ import requests
 import urllib.parse
 import base64
 import pandas as pd
+import os
+
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler
 from collections import defaultdict
-
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, session
-from config import CLIENT_SECRET, CLIENT_ID, SECRET_KEY
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
-app.secret_key = SECRET_KEY
+
+load_dotenv()
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SPOTIFY_CLIENT_ID'] = os.getenv('SPOTIFY_CLIENT_ID')
+app.config['SPOTIFY_CLIENT_SECRET'] = os.getenv('SPOTIFY_CLIENT_SECRET')
 
 REDIRECT_URI = 'http://localhost:5000/callback'
 
@@ -30,7 +37,7 @@ def login():
     scope = "user-read-private user-library-read user-read-email"
 
     params = {
-        'client_id': CLIENT_ID,
+        'client_id': app.config['SPOTIFY_CLIENT_ID'],
         'response_type': 'code',
         'scope': scope,
         'redirect_uri': REDIRECT_URI,
@@ -54,7 +61,7 @@ def callback():
             'redirect_uri': REDIRECT_URI,
         }
 
-        credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+        credentials = f"{app.config['SPOTIFY_CLIENT_ID']}:{app.config['SPOTIFY_CLIENT_SECRET']}"
         encoded_credentials = base64.b64encode(
             credentials.encode('utf-8')).decode('utf-8')
 
@@ -137,7 +144,7 @@ def get_playlists():
     playlists = defaultdict(list)
 
     for name, label in zip(track_names, kmeans.labels_):
-        playlists[f'playlist #{label + 1}'].append(name)
+        playlists[f'playlist #{label + 1}'].append(name+'\n')
 
     if not_included:
         playlists['Not included:'] = not_included
@@ -154,8 +161,8 @@ def refresh_token():
         req_body = {
             'grant_type': 'refresh_token',
             'refresh-token': session['refresh_token'],
-            'client-id': CLIENT_ID,
-            'secret-id': CLIENT_SECRET
+            'client-id': app.config['SPOTIFY_CLIENT_ID'],
+            'secret-id': app.config['SPOTIFY_CLIENT_SECRET']
         }
 
         response = requests.post(TOKEN_URL, data=req_body)
@@ -169,4 +176,4 @@ def refresh_token():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run()
