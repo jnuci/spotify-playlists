@@ -20,7 +20,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SPOTIFY_CLIENT_ID'] = os.getenv('SPOTIFY_CLIENT_ID')
 app.config['SPOTIFY_CLIENT_SECRET'] = os.getenv('SPOTIFY_CLIENT_SECRET')
 
-REDIRECT_URI = 'http://localhost:5000/callback'
+# REDIRECT_URI = 'http://localhost:5000/callback'
+REDIRECT_URI = 'http://0.0.0.0:10000/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
