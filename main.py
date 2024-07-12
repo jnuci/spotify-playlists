@@ -84,6 +84,7 @@ def get_playlists():
 
     track_names = []
     track_ids = []
+    not_included = []
 
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
@@ -109,19 +110,18 @@ def get_playlists():
         track_ids.append(batch)
 
     features = []
-    # count = 0
+    count = 0
     for batch in track_ids:
         response = requests.get(
             API_BASE_URL + 'audio-features' + f'?ids={",".join(batch)}', headers=headers)
         playlist = response.json()
 
         for song in playlist['audio_features']:
-            # if not song:
-            #     print("0000000000000000000000000000000000000")
-            #     print(track_names[count])
-            #     count += 1
-            #     continue
-            # count += 1
+            if not song:
+                not_included.append(track_names[count])
+                count += 1
+                continue
+            count += 1
             temp = {feature: value for feature, value in song.items() if feature in [
                 "danceability", "energy", "instrumentalness", "loudness", "speechiness", "tempo", "valence"]}
             features.append(temp)
@@ -138,6 +138,9 @@ def get_playlists():
 
     for name, label in zip(track_names, kmeans.labels_):
         playlists[f'playlist #{label + 1}'].append(name)
+
+    if not_included:
+        playlists['Not included:'] = not_included
 
     return jsonify(playlists)
 
