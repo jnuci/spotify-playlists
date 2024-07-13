@@ -19,9 +19,10 @@ load_dotenv()
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SPOTIFY_CLIENT_ID'] = os.getenv('SPOTIFY_CLIENT_ID')
 app.config['SPOTIFY_CLIENT_SECRET'] = os.getenv('SPOTIFY_CLIENT_SECRET')
+app.config['REDIRECT_URI'] = os.getenv('REDIRECT_URI')
 
 # REDIRECT_URI = 'http://localhost:5000/callback'
-REDIRECT_URI = 'https://spotify-playlists.onrender.com/callback'
+# REDIRECT_URI = 'https://spotify-playlists.onrender.com/callback'
 
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
@@ -41,7 +42,7 @@ def login():
         'client_id': app.config['SPOTIFY_CLIENT_ID'],
         'response_type': 'code',
         'scope': scope,
-        'redirect_uri': REDIRECT_URI,
+        'redirect_uri': app.config['REDIRECT_URI'],
         'show_dialog': True
     }
 
@@ -59,7 +60,7 @@ def callback():
         req_body = {
             'code': request.args['code'],
             'grant_type': 'authorization_code',
-            'redirect_uri': REDIRECT_URI,
+            'redirect_uri': app.config['REDIRECT_URI'],
         }
 
         credentials = f"{app.config['SPOTIFY_CLIENT_ID']}:{app.config['SPOTIFY_CLIENT_SECRET']}"
