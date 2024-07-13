@@ -145,7 +145,7 @@ def get_playlists():
     playlists = defaultdict(list)
 
     for name, label in zip(track_names, kmeans.labels_):
-        playlists[f'playlist #{label + 1}'].append(name+'\n')
+        playlists[f'playlist #{label + 1}'].append(name)
 
     if not_included:
         playlists['Not included:'] = not_included
