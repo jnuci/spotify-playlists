@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: checkout
@@ -26,3 +26,14 @@ jobs:
     - name: Run test
       run: |
         pytest
+
+    - name: Deploy to Render
+      env:
+        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        REDNER_SERVICE_ID: cq8fdfmehbks738ithk0
+      run: |
+        curl -X POST \
+        -H "Accept: application/json" \
+        -H "Authorization: Bearer $RENDER_API_KEY" \
+        -d "" \
+        https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys
