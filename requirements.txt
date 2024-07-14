@@ -4,3 +4,6 @@ scikit-learn
 flask
 python-dotenv
 gunicorn
+pytest
+pytest-flask
+requests-mock
